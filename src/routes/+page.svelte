@@ -1,36 +1,100 @@
 <script>
     import {Proskomma} from 'proskomma';
+    import {SofriaRenderFromProskomma} from 'proskomma-json-tools';
     import {thaw} from 'proskomma-freeze';
 
     const pk = new Proskomma();
-    const promise = pk.gqlQuery("{ id }");
     const loaded = (async () => {
-        console.log("test");
 
         const res = await fetch("eng_web.pkf").then((r) => {
             return r.text();
         });
 
-        if(res.length) {
+        if (res.length) {
             await thaw(pk, res);
         }
-        //console.log(res);
-        return await pk.gqlQuery("{docSets { id }}");
+        const cl = new SofriaRenderFromProskomma(
+            {
+                proskomma: pk,
+                actions: {
+                    startDocument: [
+                        {
+                            description: "Set up; Book heading",
+                            test: () => true,
+                            action: ({context, workspace}) => {
+                                workspace.htmlBits = ["<h2>", context.document.metadata.document.toc, "</h2>\n"];
+                            }
+                        }
+                    ],
+                    startParagraph: [
+                        {
+                            description: "Start HTML para with appropriate class",
+                            test: () => true,
+                            action: ({context, workspace}) => {
+                                const paraClass = context.sequences[0].block.subType.split(':')[1] || context.sequences[0].block.subType;
+                                workspace.htmlBits.push(`<p class="${paraClass}">`)
+                            }
+                        }
+                    ],
+                    endParagraph: [
+                        {
+                            description: "End HTML para",
+                            test: () => true,
+                            action: ({workspace}) => {
+                                workspace.htmlBits.push(`</p>\n`)
+                            }
+                        }
+                    ],
+                    text: [
+                        {
+                            description: "Output text",
+                            test: () => true,
+                            action: ({context, workspace}) => {
+                                workspace.htmlBits.push(context.sequences[0].element.text)
+                            }
+                        }
+                    ],
+                    mark: [
+                        {
+                            description: "Output text",
+                            test: () => true,
+                            action: ({context, workspace}) => {
+                                const element = context.sequences[0].element;
+                                if (element.subType === 'chapter_label') {
+                                    workspace.htmlBits.push(`<h3>Chapter ${element.atts['number']}</h3>\n`);
+                                } else if (element.subType === 'verses_label') {
+                                    workspace.htmlBits.push(`<b>${element.atts['number']}</b>&nbsp;`);
+                                }
+                            }
+                        }
+                    ],
+                    endDocument: [
+                        {
+                            description: "Set up",
+                            test: () => true,
+                            action: ({workspace, output}) => {
+                                output.html = workspace.htmlBits.join(``);
+                            }
+                        }
+                    ]
+                },
+                debugLevel: 0
+            }
+        );
+        const output = {};
+        const docId = "MDVlNTRhMDkt";
+        cl.renderDocument(
+            {docId, config: {chapters: ["1"]}, output}
+        );
+        return output.html;
     })();
 </script>
 
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
-
-{#await promise}
-    <p>loading</p>
-{:then data} 
-    <pre>{JSON.stringify(data, null, 2)}</pre>
-{/await}
+<h1>Proskomma Svelte Test</h1>
 
 {#await loaded}
-    <p>loading</p>
-{:then data} 
-    <pre>{JSON.stringify(data, null, 2)}</pre>
+    <p>Loading...</p>
+{:then rendered}
+    {@html rendered}
 {/await}

@@ -22,6 +22,7 @@
 		"@esbuild-plugins/node-globals-polyfill": "^0.1.1",
 		"@esbuild-plugins/node-modules-polyfill": "^0.1.4",
 		"proskomma": "^0.8.0",
-		"proskomma-freeze": "^0.7.0"
+		"proskomma-freeze": "^0.7.0",
+		"proskomma-json-tools": "^0.5.7"
 	}
 }
