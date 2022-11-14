@@ -45,6 +45,18 @@
                             }
                         }
                     ],
+                    startWrapper: [
+                    {
+                        description: "Show strongs when present",
+                        test: ({context}) => context.sequences[0].element.atts,
+                        action: ({context, workspace}) => {
+                            const strong = context.sequences[0].element.atts.strong;
+                            if (strong) {
+                                workspace.htmlBits.push(` <span style="color: red; font-size: xx-small">[${context.sequences[0].element.atts.strong}] </span>`);
+                            }
+                        }
+                    }
+                    ],
                     text: [
                         {
                             description: "Output text",
