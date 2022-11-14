@@ -81,8 +81,15 @@
                 debugLevel: 0
             }
         );
+        const bookCode = "TIT";
+        const chapter = 1;
+        const docsResult = pk.gqlQuerySync('{documents { docSetId id bookCode: header(id: "bookCode")} }');
+        const bookLookup = {};
+        for (const docRecord of docsResult.data.documents) {
+            bookLookup[docRecord.bookCode] = docRecord.id;
+        }
+        const docId = bookLookup[bookCode];
         const output = {};
-        const docId = "MDVlNTRhMDkt";
         cl.renderDocument(
             {docId, config: {chapters: ["1"]}, output}
         );
