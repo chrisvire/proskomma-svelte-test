@@ -1,5 +1,5 @@
 <script>
-    import {Proskomma} from 'proskomma';
+    import {Proskomma} from 'proskomma-core';
     import {SofriaRenderFromProskomma} from 'proskomma-json-tools';
     import {thaw} from 'proskomma-freeze';
 

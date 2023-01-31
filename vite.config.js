@@ -4,10 +4,11 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 // yarn add --dev @esbuild-plugins/node-modules-polyfill
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
+import { esbuildCommonjs, viteCommonjs } from '@originjs/vite-plugin-commonjs'
 
 /** @type {import('vite').UserConfig} */
 const config = {
-	plugins: [sveltekit()],
+	plugins: [sveltekit(),viteCommonjs()],
 	resolve: {
         alias: {
             // This Rollup aliases are extracted from @esbuild-plugins/node-modules-polyfill,
@@ -59,7 +60,8 @@ const config = {
                     process: true,
                     buffer: true
                 }),
-                NodeModulesPolyfillPlugin()
+                NodeModulesPolyfillPlugin(),
+                esbuildCommonjs(['proskomma-core']) 
             ]
         }
     },
