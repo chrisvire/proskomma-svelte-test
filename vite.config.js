@@ -8,7 +8,7 @@ import { esbuildCommonjs, viteCommonjs } from '@originjs/vite-plugin-commonjs'
 
 /** @type {import('vite').UserConfig} */
 const config = {
-	plugins: [sveltekit(),viteCommonjs()],
+	plugins: [sveltekit(), viteCommonjs()],
 	resolve: {
         alias: {
             // This Rollup aliases are extracted from @esbuild-plugins/node-modules-polyfill,
@@ -18,13 +18,12 @@ const config = {
             util: 'rollup-plugin-node-polyfills/polyfills/util',
             sys: 'util',
             events: 'rollup-plugin-node-polyfills/polyfills/events',
-            stream: 'rollup-plugin-node-polyfills/polyfills/stream',
+            // stream: 'rollup-plugin-node-polyfills/polyfills/stream',
             path: 'rollup-plugin-node-polyfills/polyfills/path',
             querystring: 'rollup-plugin-node-polyfills/polyfills/qs',
             punycode: 'rollup-plugin-node-polyfills/polyfills/punycode',
             url: 'rollup-plugin-node-polyfills/polyfills/url',
-            string_decoder:
-                'rollup-plugin-node-polyfills/polyfills/string-decoder',
+            // string_decoder: 'rollup-plugin-node-polyfills/polyfills/string-decoder',
             http: 'rollup-plugin-node-polyfills/polyfills/http',
             https: 'rollup-plugin-node-polyfills/polyfills/http',
             os: 'rollup-plugin-node-polyfills/polyfills/os',
@@ -61,10 +60,19 @@ const config = {
                     buffer: true
                 }),
                 NodeModulesPolyfillPlugin(),
-                esbuildCommonjs(['proskomma-core']) 
-            ]
+                esbuildCommonjs(['proskomma-core']),
+                {
+                    name: 'fix-node-globals-polyfill',
+                    setup(build) {
+                      build.onResolve(
+                        { filter: /_(buffer|process|virtual-process-polyfill_)\.js/ },
+                        ({ path }) => ({ path })
+                      )
+                    }
+                }
+            ],
         }
-    },
+    }
 };
 
 export default config;

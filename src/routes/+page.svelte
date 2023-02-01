@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
     import {Proskomma} from 'proskomma-core';
     import {SofriaRenderFromProskomma} from 'proskomma-json-tools';
     import {thaw} from 'proskomma-freeze';
